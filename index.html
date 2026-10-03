@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kiểm tra lộ trình đơn hàng – Kaafly Hair Việt Nam</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 20'%3E%3Crect width='30' height='20' fill='%23da251d'/%3E%3Cpath fill='%23ff0' d='M15 4l1.8 5.5h5.8l-4.7 3.4 1.8 5.5-4.7-3.4-4.7 3.4 1.8-5.5-4.7-3.4h5.8z'/%3E%3C/svg%3E">
+<style>
+:root{--bg:#f4f6fb;--card:#fff;--text:#1d2433;--muted:#6b7488;--brand:#5b4bdb;--ok:#16a34a;--line:#e3e7f0}
+@media(prefers-color-scheme:dark){:root{--bg:#12151f;--card:#1b2030;--text:#eef1f8;--muted:#98a2b8;--line:#2a3147}}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+header{background:linear-gradient(135deg,#5b4bdb,#8b5cf6);color:#fff;padding:48px 20px 90px;text-align:center}
+header h1{margin:0 0 8px;font-size:clamp(24px,5vw,34px)}
+header p{margin:0;opacity:.9}
+.by{margin:0 0 14px;opacity:.95;font-size:15px;display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap}
+.flag{border-radius:2px;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+main{position:relative;z-index:1;max-width:640px;margin:-56px auto 120px;padding:0 16px}
+.card{background:var(--card);border-radius:16px;padding:20px;box-shadow:0 8px 30px rgba(0,0,0,.1);margin-bottom:16px}
+form{display:flex;gap:8px;flex-wrap:wrap}
+input{flex:1;min-width:200px;padding:14px;font-size:17px;border:2px solid var(--line);border-radius:12px;background:transparent;color:var(--text)}
+input:focus{outline:none;border-color:var(--brand)}
+button.go{padding:14px 24px;border:0;border-radius:12px;background:var(--brand);color:#fff;font-size:16px;font-weight:600;cursor:pointer}
+.hint{font-size:13px;color:var(--muted);margin:10px 2px 0}
+.msg{text-align:center;color:var(--muted);padding:10px}
+.hello{font-size:18px;font-weight:600;margin-bottom:4px}
+.pkg{border:1px solid var(--line);border-radius:14px;padding:16px;margin-top:14px}
+.carrier{display:inline-block;padding:4px 12px;border-radius:99px;background:var(--brand);color:#fff;font-weight:700;font-size:13px}
+.id{font-size:22px;font-weight:700;letter-spacing:.5px;margin:10px 0;word-break:break-all}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.btn{padding:10px 16px;border-radius:10px;border:1px solid var(--brand);color:var(--brand);background:transparent;text-decoration:none;font-weight:600;font-size:14px;cursor:pointer}
+.btn.fill{background:var(--brand);color:#fff}
+.steps{list-style:none;margin:16px 0 0;padding:0}
+.steps li{position:relative;padding:0 0 14px 28px;font-size:14px}
+.steps li:before{content:"";position:absolute;left:5px;top:5px;width:10px;height:10px;border-radius:50%;background:var(--line)}
+.steps li:after{content:"";position:absolute;left:9px;top:16px;bottom:-4px;width:2px;background:var(--line)}
+.steps li:last-child:after{display:none}
+.steps li.done:before{background:var(--ok)}
+.steps li.now:before{background:var(--brand);box-shadow:0 0 0 5px rgba(91,75,219,.25)}
+.steps small{display:block;color:var(--muted)}
+.info{display:flex;gap:16px;flex-wrap:wrap;font-size:14px;margin-top:10px}
+.info b{display:block;font-size:12px;color:var(--muted);font-weight:500}
+#lang{position:absolute;top:14px;right:14px;padding:8px 10px;border-radius:10px;border:0;font-size:14px;background:rgba(255,255,255,.95);color:#1d2433;cursor:pointer}
+header{position:relative}
+[dir=rtl] .steps li{padding:0 28px 14px 0}[dir=rtl] .steps li:before{left:auto;right:5px}[dir=rtl] .steps li:after{left:auto;right:9px}
+.pkg{position:relative}
+.logo{display:inline-flex;align-items:center;background:#fff;border:1px solid var(--line);border-radius:10px;padding:6px 12px}
+.cp{position:absolute;top:12px;right:12px;width:34px;height:34px;border-radius:9px;border:1px solid var(--line);background:transparent;color:var(--muted);display:grid;place-items:center;cursor:pointer;font-size:15px}
+.cp:hover{color:var(--brand);border-color:var(--brand)}
+[dir=rtl] .cp{right:auto;left:12px}
+.trk{position:relative;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--line)}
+.trk .id{margin:10px 0}
+.trk .cp{top:0;right:0}
+[dir=rtl] .trk .cp{right:auto;left:0}
+.pkg .steps{margin-top:6px}
+/* chat bubble */
+#chat{position:fixed;right:20px;bottom:20px;display:flex;flex-direction:column;align-items:center;gap:4px;z-index:10}
+#bubble{width:62px;height:62px;border-radius:50%;border:0;background:linear-gradient(135deg,#6d5df0,#a855f7);display:grid;place-items:center;cursor:pointer;animation:blink 1.4s infinite}
+#bubble:hover{transform:scale(1.08)}
+#menu svg{width:20px;height:20px;flex:none}
+@keyframes blink{0%,100%{box-shadow:0 0 0 0 rgba(91,75,219,.7);opacity:1}50%{box-shadow:0 0 0 16px rgba(91,75,219,0);opacity:.7}}
+#chat small{font-size:11px;color:var(--muted)}
+#menu{display:none;flex-direction:column;gap:8px;margin-bottom:6px}
+#menu.open{display:flex}
+#menu a{display:flex;align-items:center;gap:8px;padding:10px 16px;border-radius:99px;color:#fff;text-decoration:none;font-weight:600;font-size:14px;box-shadow:0 4px 14px rgba(0,0,0,.2)}
+.ig{background:linear-gradient(45deg,#f09433,#dc2743,#bc1888)}.tg{background:#229ed9}.wa{background:#25d366}
+</style>
+</head>
+<body>
+<header><select id="lang" aria-label="Language"></select><h1 data-i="title"></h1><div class="by"><span data-i="by"></span> <svg class="flag" viewBox="0 0 30 20" width="24" height="16" aria-label="Vietnam"><rect width="30" height="20" rx="2" fill="#da251d"/><path fill="#ff0" d="M15 4l1.8 5.5h5.8l-4.7 3.4 1.8 5.5-4.7-3.4-4.7 3.4 1.8-5.5-4.7-3.4h5.8z"/></svg></div><p data-i="sub"></p></header>
+<main>
+  <div class="card">
+    <form id="f">
+      <input id="phone" type="tel" inputmode="tel" data-ph="ph" autocomplete="tel" required>
+      <button class="go" data-i="track"></button>
+    </form>
+    <p class="hint" data-i="hint"></p>
+  </div>
+  <div id="out"></div>
+</main>
+
+<div id="chat">
+  <div id="menu">
+    <a class="ig" href="https://www.instagram.com/mrcao_kaafly_turkey/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.3" cy="6.7" r=".9" fill="#fff" stroke="none"/></svg> Instagram</a>
+    <a class="tg" href="https://t.me/Edwardkaafly" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="#fff"><path d="M21.5 3.5L2.8 10.7c-.9.4-.9 1.1-.2 1.3l4.6 1.4 1.8 5.5c.2.6.4.8.9.8.4 0 .6-.2.9-.5l2.2-2.1 4.4 3.3c.8.4 1.4.2 1.6-.8l3-14.3c.3-1.2-.4-1.8-1.5-1.3z"/></svg> Telegram</a>
+    <a class="wa" href="https://wa.me/84878986897" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-12.2 7.5L3 20.5l1.6-5A8.4 8.4 0 1 1 21 11.5z"/><path d="M9 8.8c.3 2.6 2.6 4.9 5.2 5.2l1.2-1.2-1.8-1-.8.6c-.9-.4-1.6-1.1-2-2l.6-.8-1-1.8z" fill="#fff" stroke="none"/></svg> WhatsApp</a>
+  </div>
+  <button id="bubble" aria-label="Contact us"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-12.2 7.5L3 20.5l1.6-5A8.4 8.4 0 1 1 21 11.5z"/><circle cx="8.5" cy="11.5" r=".7" fill="#fff"/><circle cx="12" cy="11.5" r=".7" fill="#fff"/><circle cx="15.5" cy="11.5" r=".7" fill="#fff"/></svg></button>
+  <small data-i="contact"></small>
+</div>
+
+<script>
+// ===== CONFIG =====
+const API_URL = "https://script.google.com/macros/s/AKfycbyUGNDe7P6fK7l0yuTZG7nA0g3rLPCpObzlyTN6PdRUU-7Dp4c0DKBqo5Zv9Idux0C1UQ/exec";
+const LINKS = {
+  fedex: id => "https://www.fedex.com/fedextrack/?trknbr=" + id,
+  dhl: id => "https://www.dhl.com/global-en/home/tracking/tracking-express.html?submit=1&tracking-id=" + id,
+  ups: id => "https://www.ups.com/track?tracknum=" + id
+};
+// ==================
+const LANGS = {vi:"Tiếng Việt",de:"Deutsch",uk:"Українська",ru:"Русский",tr:"Türkçe",en:"English",fr:"Français",it:"Italiano",pl:"Polski",ar:"العربية (الكويت)",sk:"Slovenčina",es:"Español",pt:"Português (Brasil)",he:"עברית (ישראל)",nl:"Nederlands",ch:"Deutsch (Schweiz)"};
+const T = {
+en:{title:"Track Your Order",sub:"Enter your phone number to see your shipment",ph:"e.g. +49 176 6287 0031",track:"Track",hint:"Use the same phone number you gave us when ordering (with country code).",short:"Please enter your full phone number.",searching:"Searching your shipment…",nf:"We couldn't find an order for this number. Please check it or tap the chat button to contact us.",hello:"Hello",to:"Your shipment to",ship:"Your shipment:",status:"Status",eta:"Estimated delivery",loc:"Latest location",noev:"Detailed route is not shown here yet. Tap the button below to see live tracking on the carrier's website.",nocode:"Your tracking code is not ready yet.",open:"View on",site:"website",copy:"Copy ID",copied:"Copied ✓",err:"Could not load tracking data. Please try again later or contact us.",contact:"contact us"},
+vi:{title:"Theo dõi đơn hàng",sub:"Nhập số điện thoại để xem lộ trình đơn hàng",ph:"vd: +84 878 986 897",track:"Tra cứu",hint:"Nhập đúng số điện thoại bạn đã dùng khi đặt hàng (kèm mã quốc gia).",short:"Vui lòng nhập đầy đủ số điện thoại.",searching:"Đang tìm đơn hàng…",nf:"Không tìm thấy đơn hàng với số này. Vui lòng kiểm tra lại hoặc bấm nút chat để liên hệ.",hello:"Xin chào",to:"Đơn hàng gửi đến",ship:"Đơn hàng của bạn:",status:"Trạng thái",eta:"Dự kiến giao",loc:"Vị trí gần nhất",noev:"Lộ trình chi tiết chưa hiển thị ở đây. Bấm nút bên dưới để xem trực tiếp trên web của đơn vị vận chuyển.",nocode:"Mã vận đơn chưa sẵn sàng.",open:"Xem trên web",site:"",copy:"Sao chép mã",copied:"Đã chép ✓",err:"Không tải được dữ liệu. Vui lòng thử lại sau hoặc liên hệ chúng tôi.",contact:"liên hệ"},
+ru:{title:"Отслеживание заказа",sub:"Введите номер телефона, чтобы увидеть посылку",ph:"напр. +7 900 123 45 67",track:"Найти",hint:"Введите номер телефона, указанный при заказе (с кодом страны).",short:"Введите номер телефона полностью.",searching:"Ищем вашу посылку…",nf:"Заказ с этим номером не найден. Проверьте номер или напишите нам в чате.",hello:"Здравствуйте",to:"Ваша посылка в",ship:"Ваша посылка:",status:"Статус",eta:"Ожидаемая доставка",loc:"Последнее местоположение",noev:"Подробный маршрут здесь пока не показан. Нажмите кнопку ниже, чтобы посмотреть на сайте перевозчика.",nocode:"Трек-номер ещё не готов.",open:"Открыть на сайте",site:"",copy:"Копировать номер",copied:"Скопировано ✓",err:"Не удалось загрузить данные. Попробуйте позже или свяжитесь с нами.",contact:"связаться"},
+tr:{title:"Siparişinizi Takip Edin",sub:"Gönderinizi görmek için telefon numaranızı girin",ph:"örn. +90 5xx xxx xx xx",track:"Sorgula",hint:"Sipariş verirken kullandığınız telefon numarasını (ülke koduyla) girin.",short:"Lütfen telefon numaranızı eksiksiz girin.",searching:"Gönderiniz aranıyor…",nf:"Bu numara için sipariş bulunamadı. Lütfen kontrol edin veya sohbet düğmesiyle bize ulaşın.",hello:"Merhaba",to:"Gönderiniz şuraya:",ship:"Gönderiniz:",status:"Durum",eta:"Tahmini teslimat",loc:"Son konum",noev:"Ayrıntılı rota burada henüz gösterilmiyor. Taşıyıcının sitesinde canlı takip için aşağıdaki düğmeye basın.",nocode:"Takip kodunuz henüz hazır değil.",open:"Şurada görüntüle:",site:"",copy:"Kodu kopyala",copied:"Kopyalandı ✓",err:"Veriler yüklenemedi. Lütfen daha sonra tekrar deneyin veya bize ulaşın.",contact:"bize ulaşın"},
+de:{title:"Bestellung verfolgen",sub:"Geben Sie Ihre Telefonnummer ein, um Ihre Sendung zu sehen",ph:"z. B. +49 176 6287 0031",track:"Suchen",hint:"Verwenden Sie die Telefonnummer der Bestellung (mit Ländervorwahl).",short:"Bitte geben Sie die vollständige Telefonnummer ein.",searching:"Sendung wird gesucht…",nf:"Für diese Nummer wurde keine Bestellung gefunden. Bitte prüfen Sie sie oder kontaktieren Sie uns per Chat.",hello:"Hallo",to:"Ihre Sendung nach",ship:"Ihre Sendung:",status:"Status",eta:"Voraussichtliche Zustellung",loc:"Letzter Standort",noev:"Die genaue Route wird hier noch nicht angezeigt. Tippen Sie unten, um die Live-Verfolgung beim Versanddienst zu sehen.",nocode:"Ihr Sendungscode ist noch nicht bereit.",open:"Ansehen auf",site:"",copy:"ID kopieren",copied:"Kopiert ✓",err:"Daten konnten nicht geladen werden. Bitte später erneut versuchen oder uns kontaktieren.",contact:"Kontakt"},
+es:{title:"Rastrea tu pedido",sub:"Introduce tu teléfono para ver tu envío",ph:"p. ej. +34 600 000 000",track:"Buscar",hint:"Usa el mismo teléfono que diste al pedir (con código de país).",short:"Introduce el teléfono completo.",searching:"Buscando tu envío…",nf:"No encontramos un pedido con este número. Revísalo o contáctanos por el chat.",hello:"Hola",to:"Tu envío a",ship:"Tu envío:",status:"Estado",eta:"Entrega estimada",loc:"Última ubicación",noev:"La ruta detallada aún no se muestra aquí. Pulsa el botón para ver el seguimiento en la web del transportista.",nocode:"Tu código de seguimiento aún no está listo.",open:"Ver en",site:"",copy:"Copiar ID",copied:"Copiado ✓",err:"No se pudieron cargar los datos. Inténtalo más tarde o contáctanos.",contact:"contáctanos"},
+fr:{title:"Suivre votre commande",sub:"Saisissez votre téléphone pour voir votre colis",ph:"ex. +33 6 12 34 56 78",track:"Suivre",hint:"Utilisez le numéro donné lors de la commande (avec l'indicatif pays).",short:"Veuillez saisir le numéro complet.",searching:"Recherche de votre colis…",nf:"Aucune commande trouvée pour ce numéro. Vérifiez-le ou contactez-nous via le chat.",hello:"Bonjour",to:"Votre colis vers",ship:"Votre colis :",status:"Statut",eta:"Livraison estimée",loc:"Dernière position",noev:"L'itinéraire détaillé n'est pas encore affiché ici. Touchez le bouton pour le suivi en direct sur le site du transporteur.",nocode:"Votre numéro de suivi n'est pas encore prêt.",open:"Voir sur",site:"",copy:"Copier l'ID",copied:"Copié ✓",err:"Impossible de charger les données. Réessayez plus tard ou contactez-nous.",contact:"contact"},
+it:{title:"Traccia il tuo ordine",sub:"Inserisci il telefono per vedere la spedizione",ph:"es. +39 333 123 4567",track:"Cerca",hint:"Usa lo stesso numero fornito all'ordine (con prefisso internazionale).",short:"Inserisci il numero completo.",searching:"Ricerca della spedizione…",nf:"Nessun ordine trovato per questo numero. Controllalo o contattaci in chat.",hello:"Ciao",to:"La tua spedizione verso",ship:"La tua spedizione:",status:"Stato",eta:"Consegna stimata",loc:"Ultima posizione",noev:"Il percorso dettagliato non è ancora mostrato qui. Tocca il pulsante per il tracking sul sito del corriere.",nocode:"Il codice di tracking non è ancora pronto.",open:"Vedi su",site:"",copy:"Copia ID",copied:"Copiato ✓",err:"Impossibile caricare i dati. Riprova più tardi o contattaci.",contact:"contattaci"},
+pt:{title:"Rastreie seu pedido",sub:"Digite seu telefone para ver sua encomenda",ph:"ex. +55 11 91234-5678",track:"Buscar",hint:"Use o mesmo telefone informado no pedido (com código do país).",short:"Digite o telefone completo.",searching:"Procurando sua encomenda…",nf:"Nenhum pedido encontrado para este número. Verifique ou fale conosco pelo chat.",hello:"Olá",to:"Sua encomenda para",ship:"Sua encomenda:",status:"Status",eta:"Entrega estimada",loc:"Última localização",noev:"A rota detalhada ainda não aparece aqui. Toque no botão para ver o rastreio no site da transportadora.",nocode:"Seu código de rastreio ainda não está pronto.",open:"Ver em",site:"",copy:"Copiar ID",copied:"Copiado ✓",err:"Não foi possível carregar os dados. Tente mais tarde ou fale conosco.",contact:"fale conosco"},
+ar:{title:"تتبع طلبك",sub:"أدخل رقم هاتفك لعرض شحنتك",ph:"مثال: +966 5x xxx xxxx",track:"تتبع",hint:"استخدم نفس رقم الهاتف الذي قدمته عند الطلب (مع رمز الدولة).",short:"يرجى إدخال رقم الهاتف كاملاً.",searching:"جارٍ البحث عن شحنتك…",nf:"لم نجد طلباً بهذا الرقم. تحقق منه أو تواصل معنا عبر الدردشة.",hello:"مرحباً",to:"شحنتك إلى",ship:"شحنتك:",status:"الحالة",eta:"موعد التسليم المتوقع",loc:"آخر موقع",noev:"المسار التفصيلي غير معروض هنا بعد. اضغط الزر أدناه للتتبع المباشر على موقع شركة الشحن.",nocode:"رمز التتبع غير جاهز بعد.",open:"عرض على موقع",site:"",copy:"نسخ الرقم",copied:"تم النسخ ✓",err:"تعذر تحميل البيانات. حاول لاحقاً أو تواصل معنا.",contact:"تواصل معنا"},
+uk:{sub:"Введіть номер телефону, щоб побачити посилку",ph:"напр. +380 50 123 45 67",track:"Знайти",hint:"Введіть номер телефону, указаний під час замовлення (з кодом країни).",short:"Введіть номер телефону повністю.",searching:"Шукаємо вашу посилку…",nf:"Замовлення з цим номером не знайдено. Перевірте номер або напишіть нам у чаті.",hello:"Вітаємо",to:"Ваша посилка до",ship:"Ваша посилка:",status:"Статус",eta:"Очікувана доставка",loc:"Останнє місцезнаходження",noev:"Докладний маршрут тут поки не показано. Натисніть кнопку нижче, щоб переглянути на сайті перевізника.",nocode:"Трек-номер ще не готовий.",open:"Відкрити на сайті",site:"",copy:"Копіювати номер",copied:"Скопійовано ✓",err:"Не вдалося завантажити дані. Спробуйте пізніше або зв'яжіться з нами.",contact:"зв'язатися"},
+pl:{sub:"Wpisz numer telefonu, aby zobaczyć swoją przesyłkę",ph:"np. +48 600 123 456",track:"Szukaj",hint:"Użyj numeru telefonu podanego przy zamówieniu (z numerem kierunkowym kraju).",short:"Wpisz pełny numer telefonu.",searching:"Szukamy Twojej przesyłki…",nf:"Nie znaleziono zamówienia dla tego numeru. Sprawdź go lub napisz do nas na czacie.",hello:"Cześć",to:"Twoja przesyłka do",ship:"Twoja przesyłka:",status:"Status",eta:"Przewidywana dostawa",loc:"Ostatnia lokalizacja",noev:"Szczegółowa trasa nie jest tu jeszcze wyświetlana. Kliknij przycisk poniżej, aby zobaczyć śledzenie na stronie przewoźnika.",nocode:"Numer przesyłki nie jest jeszcze gotowy.",open:"Otwórz na stronie",site:"",copy:"Kopiuj ID",copied:"Skopiowano ✓",err:"Nie udało się wczytać danych. Spróbuj później lub skontaktuj się z nami.",contact:"kontakt"},
+sk:{sub:"Zadajte telefónne číslo a zobrazí sa vaša zásielka",ph:"napr. +421 900 123 456",track:"Hľadať",hint:"Použite telefónne číslo uvedené pri objednávke (s predvoľbou krajiny).",short:"Zadajte celé telefónne číslo.",searching:"Hľadáme vašu zásielku…",nf:"Pre toto číslo sa nenašla žiadna objednávka. Skontrolujte ho alebo nás kontaktujte cez chat.",hello:"Dobrý deň",to:"Vaša zásielka do",ship:"Vaša zásielka:",status:"Stav",eta:"Predpokladané doručenie",loc:"Posledná poloha",noev:"Podrobná trasa sa tu zatiaľ nezobrazuje. Kliknutím na tlačidlo nižšie uvidíte sledovanie na webe prepravcu.",nocode:"Sledovacie číslo ešte nie je pripravené.",open:"Otvoriť na webe",site:"",copy:"Kopírovať ID",copied:"Skopírované ✓",err:"Údaje sa nepodarilo načítať. Skúste neskôr alebo nás kontaktujte.",contact:"kontakt"},
+he:{sub:"הזינו את מספר הטלפון כדי לראות את המשלוח",ph:"לדוגמה: ‎+972 50 123 4567",track:"חיפוש",hint:"הזינו את מספר הטלפון שמסרתם בהזמנה (עם קידומת מדינה).",short:"אנא הזינו את מספר הטלפון המלא.",searching:"מחפשים את המשלוח שלכם…",nf:"לא נמצאה הזמנה למספר זה. בדקו את המספר או פנו אלינו בצ׳אט.",hello:"שלום",to:"המשלוח שלכם אל",ship:"המשלוח שלכם:",status:"סטטוס",eta:"מועד מסירה משוער",loc:"מיקום אחרון",noev:"המסלול המפורט עדיין לא מוצג כאן. לחצו על הכפתור למטה למעקב חי באתר חברת השילוח.",nocode:"מספר המעקב עדיין לא מוכן.",open:"צפייה באתר",site:"",copy:"העתקת מספר",copied:"הועתק ✓",err:"לא ניתן לטעון את הנתונים. נסו שוב מאוחר יותר או צרו קשר.",contact:"צור קשר"}
+};
+const TT = {vi:"Kiểm tra lộ trình đơn hàng",en:"Check Your Order Route",de:"Sendungsverlauf prüfen",uk:"Перевірка маршруту замовлення",ru:"Проверка маршрута заказа",tr:"Sipariş Rotası Sorgulama",fr:"Vérifier l'itinéraire de votre commande",it:"Controlla il percorso del tuo ordine",pl:"Sprawdź trasę zamówienia",ar:"تحقق من مسار طلبك",sk:"Skontrolujte trasu objednávky",es:"Consulta la ruta de tu pedido",pt:"Verifique a rota do seu pedido",he:"בדיקת מסלול ההזמנה"};
+const BY = {vi:"cung cấp bởi Kaafly Hair Việt Nam",en:"Powered by Kaafly Hair Vietnam",de:"Bereitgestellt von Kaafly Hair Vietnam",uk:"Надано Kaafly Hair Vietnam",ru:"Предоставлено Kaafly Hair Vietnam",tr:"Kaafly Hair Vietnam tarafından sağlanmaktadır",fr:"Proposé par Kaafly Hair Vietnam",it:"Offerto da Kaafly Hair Vietnam",pl:"Dostarczane przez Kaafly Hair Vietnam",ar:"مقدَّم من Kaafly Hair فيتنام",sk:"Poskytuje Kaafly Hair Vietnam",es:"Ofrecido por Kaafly Hair Vietnam",pt:"Oferecido por Kaafly Hair Vietnam",he:"מוגש על ידי Kaafly Hair וייטנאם"};
+T.nl={sub:"Voer je telefoonnummer in om je zending te zien",ph:"bijv. +31 6 12345678",track:"Zoeken",hint:"Gebruik het telefoonnummer dat je bij het bestellen hebt opgegeven (met landcode).",short:"Voer het volledige telefoonnummer in.",searching:"Je zending wordt gezocht…",nf:"Geen bestelling gevonden voor dit nummer. Controleer het nummer of neem contact op via de chat.",hello:"Hallo",to:"Je zending naar",ship:"Je zending:",status:"Status",eta:"Verwachte levering",loc:"Laatste locatie",nocode:"Je trackingcode is nog niet beschikbaar.",open:"Bekijken op",site:"",copy:"ID kopiëren",copied:"Gekopieerd ✓",err:"Gegevens konden niet worden geladen. Probeer het later opnieuw of neem contact met ons op.",contact:"contact"};
+T.ch={...T.de};
+TT.nl="Bestelroute controleren";TT.ch=TT.de;BY.nl="Aangeboden door Kaafly Hair Vietnam";BY.ch=BY.de;
+const N={vi:["Lộ trình","Đã tạo đơn","Đã lấy hàng","Đang vận chuyển","Đang giao hàng","Đã giao hàng","Ngôn ngữ","Liên hệ"],en:["Route","Order created","Picked up","In transit","Out for delivery","Delivered","Language","Contact us"],fr:["Itinéraire","Commande créée","Colis pris en charge","En transit","En cours de livraison","Livré","Langue","Nous contacter"],it:["Percorso","Ordine creato","Ritirato","In transito","In consegna","Consegnato","Lingua","Contattaci"],de:["Sendungsverlauf","Bestellung erstellt","Abgeholt","Unterwegs","In Zustellung","Zugestellt","Sprache","Kontakt"],tr:["Rota","Sipariş oluşturuldu","Teslim alındı","Yolda","Dağıtımda","Teslim edildi","Dil","Bize ulaşın"],pl:["Trasa","Zamówienie utworzone","Odebrano","W tranzycie","W doręczeniu","Dostarczono","Język","Kontakt"],ru:["Маршрут","Заказ создан","Забрано","В пути","Передано курьеру","Доставлено","Язык","Связаться"],uk:["Маршрут","Замовлення створено","Забрано","У дорозі","Передано кур'єру","Доставлено","Мова","Зв'язатися"],sk:["Trasa","Objednávka vytvorená","Vyzdvihnuté","Na ceste","Na doručení","Doručené","Jazyk","Kontakt"],ar:["المسار","تم إنشاء الطلب","تم الاستلام","في الطريق","قيد التوصيل","تم التسليم","اللغة","تواصل معنا"],es:["Ruta","Pedido creado","Recogido","En tránsito","En reparto","Entregado","Idioma","Contáctanos"],pt:["Rota","Pedido criado","Coletado","Em trânsito","Saiu para entrega","Entregue","Idioma","Fale conosco"],he:["מסלול","ההזמנה נוצרה","נאסף","בדרך","בדרך אליכם למסירה","נמסר","שפה","צור קשר"],nl:["Route","Bestelling aangemaakt","Opgehaald","Onderweg","In bezorging","Bezorgd","Taal","Contact"]};
+N.ch=N.de;
+Object.keys(N).forEach(c=>{const a=N[c];Object.assign(T[c],{route:a[0],s1:a[1],s2:a[2],s3:a[3],s4:a[4],s5:a[5],lang:a[6],chat:a[7]});});
+const M={vi:["Đã nhận đơn hàng","Đã gửi hàng","Giao tới địa chỉ khách hàng","Hà Nội"],en:["Order received","Shipped","Delivery to customer's address","Hanoi"],fr:["Commande reçue","Expédié","Livraison à l'adresse du client","Hanoï"],it:["Ordine ricevuto","Spedito","Consegna all'indirizzo del cliente","Hanoi"],de:["Bestellung erhalten","Versendet","Zustellung an die Kundenadresse","Hanoi"],tr:["Sipariş teslim alındı","Gönderildi","Müşterinin adresine teslimat","Hanoi"],pl:["Zamówienie odebrane","Wysłano","Dostawa na adres klienta","Hanoi"],ru:["Заказ получен","Отправлено","Доставка по адресу клиента","Ханой"],uk:["Замовлення отримано","Відправлено","Доставка за адресою клієнта","Ханой"],sk:["Objednávka prijatá","Odoslané","Doručenie na adresu zákazníka","Hanoj"],ar:["تم استلام الطلب","تم الشحن","التوصيل إلى عنوان العميل","هانوي"],es:["Pedido recibido","Enviado","Entrega en la dirección del cliente","Hanói"],pt:["Pedido recebido","Enviado","Entrega no endereço do cliente","Hanói"],he:["ההזמנה התקבלה","נשלח","מסירה לכתובת הלקוח","האנוי"],nl:["Bestelling ontvangen","Verzonden","Bezorging op het adres van de klant","Hanoi"]};
+M.ch=M.de;
+Object.keys(M).forEach(c=>{const a=M[c];Object.assign(T[c],{s5:a[0],sent:a[1],dest:a[2],hn:a[3]});});
+const OD={vi:"Đơn hàng đang được giao",en:"Your order is being delivered",fr:"Votre commande est en cours de livraison",it:"Il tuo ordine è in consegna",de:"Ihre Bestellung wird zugestellt",tr:"Siparişiniz teslimat sürecinde",pl:"Twoje zamówienie jest w trakcie dostawy",ru:"Заказ доставляется",uk:"Замовлення доставляється",sk:"Vaša objednávka sa doručuje",ar:"طلبك قيد التوصيل",es:"Tu pedido está en reparto",pt:"Seu pedido está sendo entregue",he:"ההזמנה שלכם בדרך למסירה",nl:"Je bestelling wordt bezorgd"};
+OD.ch=OD.de;Object.keys(OD).forEach(c=>T[c].ondel=OD[c]);T.vi.loc="Vị trí hiện tại";
+const LOC={ch:"de-CH",pt:"pt-BR",ar:"ar-KW",he:"he-IL"};
+Object.keys(TT).forEach(c => { T[c].title = TT[c]; T[c].by = BY[c]; });
+const $ = id => document.getElementById(id), out = $("out"), sel = $("lang");
+const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+let L = "en", state = null;
+const t = k => (T[L] && T[L][k]) || T.en[k];
+const fmt = v => { const d = new Date(v); return isNaN(d) ? esc(v) : d.toLocaleString(L, {dateStyle:"medium", timeStyle:"short"}); };
+const fmtDate = v => {
+  const s = String(v == null ? "" : v).trim(); let m, y, mo, d;
+  if ((m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/))) { y = +m[1]; mo = +m[2]; d = +m[3]; }
+  else if ((m = s.match(/^(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{4})$/))) { d = +m[1]; mo = +m[2]; y = +m[3]; }
+  else return esc(s);
+  return new Date(Date.UTC(y, mo - 1, d)).toLocaleDateString(LOC[L]||L, {dateStyle: "medium", timeZone: "UTC"});
+};
+const hanoi = () => (t("hn") + ", " + ctry("VN")).toLocaleUpperCase(LOC[L] || L);
+const ctry = c => { const v = String(c || "").trim(); if (/^[A-Za-z]{2}$/.test(v)) { try { return new Intl.DisplayNames([LOC[L] || L], {type: "region"}).of(v.toUpperCase()) || v; } catch (e) {} } return v; };
+const stage = x => { x = String(x || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/đ/g, "d");
+  return /da giao|da nhan|nhan duoc|delivered|received|zugestellt|erhalten/.test(x) ? 5 : /dang giao|out for delivery|ready for pickup|in zustellung/.test(x) ? 4 : /van chuyen|dang di|transit|customs|hai quan|unterwegs/.test(x) ? 3 : /da lay|lay hang|picked|pickup|abgeholt/.test(x) ? 2 : /da tao|tao don|created|processing|prepar|dang xu ly|chuan bi|confirmed/.test(x) ? 1 : 0; };
+Object.keys(LANGS).forEach(c => sel.add(new Option(LANGS[c], c)));
+try { L = localStorage.getItem("lang") || ""; } catch (e) { L = ""; }
+if (!T[L]) L = T[(navigator.language || "en").slice(0, 2).replace("iw", "he")] ? (navigator.language || "en").slice(0, 2).replace("iw", "he") : "en";
+$("bubble").onclick = () => $("menu").classList.toggle("open");
+
+function render() {
+  document.documentElement.lang = L; document.documentElement.dir = (L === "ar" || L === "he") ? "rtl" : "ltr"; document.title = t("title") + " – Kaafly Hair"; sel.value = L; sel.setAttribute("aria-label", t("lang")); $("bubble").setAttribute("aria-label", t("chat"));
+  document.querySelectorAll("[data-i]").forEach(el => el.textContent = t(el.dataset.i));
+  document.querySelectorAll("[data-ph]").forEach(el => el.placeholder = t(el.dataset.ph));
+  const s = state; if (!s) { out.innerHTML = ""; return; }
+  if (s.k === "msg") { out.innerHTML = `<div class="card msg">${t(s.m)}</div>`; return; }
+  const r = s.r, {pk, info} = parse(r);
+  out.innerHTML = `<div class="card"><div class="hello">${t("hello")}, ${esc(r.name)} 👋</div><div class="msg" style="text-align:start;padding:0">${r.country ? t("to") + " " + esc(ctry(r.country)) : t("ship")}</div>${pk.length ? pkgHTML(pk, info, r.country) : `<div class="msg">${t("nocode")}</div>`}</div>`;
+}
+const LOGO={
+fedex:'<svg viewBox="0 0 84 30" height="28" role="img" aria-label="FedEx"><text x="0" y="24" font-family="Arial,Helvetica,sans-serif" font-weight="800" font-size="27" letter-spacing="-1"><tspan fill="#4D148C">Fed</tspan><tspan fill="#FF6600">Ex</tspan></text></svg>',
+dhl:'<svg viewBox="0 0 74 30" height="28" role="img" aria-label="DHL"><rect width="74" height="30" rx="4" fill="#FFCC00"/><text x="37" y="23" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="900" font-style="italic" font-size="23" fill="#D40511">DHL</text></svg>',
+ups:'<svg viewBox="0 0 52 60" height="34" role="img" aria-label="UPS"><path d="M4 4h44v28c0 12-12 20-22 24C16 52 4 44 4 32z" fill="#351C15"/><text x="26" y="36" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="800" font-size="16" fill="#FFB500">ups</text></svg>'};
+const CPI='<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>';
+function cp(b) { try { navigator.clipboard.writeText(b.dataset.id); } catch (e) {} b.textContent = "✓"; b.title = t("copied"); setTimeout(() => { b.innerHTML = CPI; b.title = t("copy"); }, 1500); }
+const norm = x => String(x == null ? "" : x).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/đ/g, "d").replace(/\s+/g, " ").trim();
+function parse(r) {
+  const pk = [], info = {status: "", eta: "", location: ""};
+  (r.packages || []).forEach(p => { const c = norm(p.carrier);
+    if (LINKS[c] && p.id) { pk.push(p); ["status", "eta", "location"].forEach(k => { if (!info[k] && p[k]) info[k] = p[k]; }); } });
+  ["status", "eta", "location"].forEach(k => { if (!info[k] && r[k]) info[k] = r[k]; });
+  (r.packages || []).forEach(p => { const c = norm(p.carrier), v = p.id == null ? "" : String(p.id).trim();
+    if (!v) return;
+    if (/^trang thai/.test(c)) info.status = v; else if (/^ngay nhan/.test(c)) info.eta = v; else if (/^vi tri/.test(c)) info.location = v; });
+  return {pk, info};
+}
+function pkgHTML(pk, info, country) {
+  const st = stage(info.status), eff = st || 3, dest = esc(ctry(country)), loc = esc(info.location || "");
+  const eta = info.eta && eff !== 5 ? " · " + t("eta") + " " + fmtDate(info.eta) : "";
+  // [dòng chính, dòng phụ, trạng thái]: done = xanh, now = tím, "" = xám
+  const n = [[esc(hanoi()), t("sent"), eff <= 2 ? "now" : "done"]];
+  if (eff === 5) n.push([dest, t("s5"), "done"]);
+  else {
+    n.push([t("ondel"), "", eff <= 2 ? "" : loc ? "done" : "now"]);
+    if (eff >= 3 && loc) n.push([loc, t("loc"), "now"]);
+    n.push([dest, t("dest") + eta, ""]);
+  }
+  const trk = pk.map(p => { const k = norm(p.carrier), C = esc(String(p.carrier).toUpperCase()), link = LINKS[k](encodeURIComponent(p.id));
+    return `<div class="trk"><button class="cp" data-id="${esc(p.id)}" onclick="cp(this)" title="${t("copy")}" aria-label="${t("copy")}">${CPI}</button>
+      ${LOGO[k] ? `<div class="logo">${LOGO[k]}</div>` : `<span class="carrier">${C}</span>`}<div class="id">${esc(p.id)}</div>
+      <a class="btn" href="${link}" target="_blank" rel="noopener">${t("open")} ${C} ↗</a></div>`; }).join("");
+  return `<div class="pkg">${trk}<ul class="steps">${n.map(x => `<li class="${x[2]}">${x[0]}${x[1] ? `<small>${x[1]}</small>` : ""}</li>`).join("")}</ul></div>`;
+}
+sel.onchange = () => { L = sel.value; try { localStorage.setItem("lang", L); } catch (e) {} render(); };
+$("f").onsubmit = async e => {
+  e.preventDefault();
+  const q = $("phone").value.replace(/\D/g, "");
+  if (q.length < 7) { state = {k: "msg", m: "short"}; return render(); }
+  state = {k: "msg", m: "searching"}; render();
+  try {
+    const r = await (await fetch(API_URL + "?phone=" + q)).json();
+    if (r.error) throw new Error(r.error);
+    state = r.found ? {k: "r", r} : {k: "msg", m: "nf"};
+  } catch (err) { state = {k: "msg", m: "err"}; }
+  render();
+};
+render();
+</script>
+</body>
+</html>
