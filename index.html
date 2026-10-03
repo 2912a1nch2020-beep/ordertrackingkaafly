@@ -133,7 +133,7 @@ Object.keys(TT).forEach(c => { T[c].title = TT[c]; T[c].by = BY[c]; });
 const $ = id => document.getElementById(id), out = $("out"), sel = $("lang");
 const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 let L = "en", state = null;
-const t = k => (T[L] && T[L][k]) || T.en[k];
+const tr = k => (T[L] && T[L][k]) || T.en[k];
 const fmt = v => { const d = new Date(v); return isNaN(d) ? esc(v) : d.toLocaleString(L, {dateStyle:"medium", timeStyle:"short"}); };
 const fmtDate = v => {
   const s = String(v == null ? "" : v).trim(); let m, y, mo, d;
@@ -142,7 +142,7 @@ const fmtDate = v => {
   else return esc(s);
   return new Date(Date.UTC(y, mo - 1, d)).toLocaleDateString(LOC[L]||L, {dateStyle: "medium", timeZone: "UTC"});
 };
-const hanoi = () => (t("hn") + ", " + ctry("VN")).toLocaleUpperCase(LOC[L] || L);
+const hanoi = () => (tr("hn") + ", " + ctry("VN")).toLocaleUpperCase(LOC[L] || L);
 const ctry = c => { const v = String(c || "").trim(); if (/^[A-Za-z]{2}$/.test(v)) { try { return new Intl.DisplayNames([LOC[L] || L], {type: "region"}).of(v.toUpperCase()) || v; } catch (e) {} } return v; };
 const stage = x => { x = String(x || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/đ/g, "d");
   return /da giao|da nhan|nhan duoc|delivered|received|zugestellt|erhalten/.test(x) ? 5 : /dang giao|out for delivery|ready for pickup|in zustellung/.test(x) ? 4 : /van chuyen|dang di|transit|customs|hai quan|unterwegs/.test(x) ? 3 : /da lay|lay hang|picked|pickup|abgeholt/.test(x) ? 2 : /da tao|tao don|created|processing|prepar|dang xu ly|chuan bi|confirmed/.test(x) ? 1 : 0; };
@@ -152,20 +152,20 @@ if (!T[L]) L = T[(navigator.language || "en").slice(0, 2).replace("iw", "he")] ?
 $("bubble").onclick = () => $("menu").classList.toggle("open");
 
 function render() {
-  document.documentElement.lang = L; document.documentElement.dir = (L === "ar" || L === "he") ? "rtl" : "ltr"; document.title = t("title") + " – Kaafly Hair"; sel.value = L; sel.setAttribute("aria-label", t("lang")); $("bubble").setAttribute("aria-label", t("chat"));
-  document.querySelectorAll("[data-i]").forEach(el => el.textContent = t(el.dataset.i));
-  document.querySelectorAll("[data-ph]").forEach(el => el.placeholder = t(el.dataset.ph));
+  document.documentElement.lang = L; document.documentElement.dir = (L === "ar" || L === "he") ? "rtl" : "ltr"; document.title = tr("title") + " – Kaafly Hair"; sel.value = L; sel.setAttribute("aria-label", tr("lang")); $("bubble").setAttribute("aria-label", tr("chat"));
+  document.querySelectorAll("[data-i]").forEach(el => el.textContent = tr(el.dataset.i));
+  document.querySelectorAll("[data-ph]").forEach(el => el.placeholder = tr(el.dataset.ph));
   const s = state; if (!s) { out.innerHTML = ""; return; }
-  if (s.k === "msg") { out.innerHTML = `<div class="card msg">${t(s.m)}</div>`; return; }
+  if (s.k === "msg") { out.innerHTML = `<div class="card msg">${tr(s.m)}</div>`; return; }
   const r = s.r, {pk, info} = parse(r);
-  out.innerHTML = `<div class="card"><div class="hello">${t("hello")}, ${esc(r.name)} 👋</div><div class="msg" style="text-align:start;padding:0">${r.country ? t("to") + " " + esc(ctry(r.country)) : t("ship")}</div>${pk.length ? pkgHTML(pk, info, r.country) : `<div class="msg">${t("nocode")}</div>`}</div>`;
+  out.innerHTML = `<div class="card"><div class="hello">${tr("hello")}, ${esc(r.name)} 👋</div><div class="msg" style="text-align:start;padding:0">${r.country ? tr("to") + " " + esc(ctry(r.country)) : tr("ship")}</div>${pk.length ? pkgHTML(pk, info, r.country) : `<div class="msg">${tr("nocode")}</div>`}</div>`;
 }
 const LOGO={
 fedex:'<svg viewBox="0 0 84 30" height="28" role="img" aria-label="FedEx"><text x="0" y="24" font-family="Arial,Helvetica,sans-serif" font-weight="800" font-size="27" letter-spacing="-1"><tspan fill="#4D148C">Fed</tspan><tspan fill="#FF6600">Ex</tspan></text></svg>',
 dhl:'<svg viewBox="0 0 74 30" height="28" role="img" aria-label="DHL"><rect width="74" height="30" rx="4" fill="#FFCC00"/><text x="37" y="23" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="900" font-style="italic" font-size="23" fill="#D40511">DHL</text></svg>',
 ups:'<svg viewBox="0 0 52 60" height="34" role="img" aria-label="UPS"><path d="M4 4h44v28c0 12-12 20-22 24C16 52 4 44 4 32z" fill="#351C15"/><text x="26" y="36" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="800" font-size="16" fill="#FFB500">ups</text></svg>'};
 const CPI='<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>';
-function cp(b) { try { navigator.clipboard.writeText(b.dataset.id); } catch (e) {} b.textContent = "✓"; b.title = t("copied"); setTimeout(() => { b.innerHTML = CPI; b.title = t("copy"); }, 1500); }
+function cp(b) { try { navigator.clipboard.writeText(b.dataset.id); } catch (e) {} b.textContent = "✓"; b.title = tr("copied"); setTimeout(() => { b.innerHTML = CPI; b.title = tr("copy"); }, 1500); }
 const norm = x => String(x == null ? "" : x).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/đ/g, "d").replace(/\s+/g, " ").trim();
 function parse(r) {
   const pk = [], info = {status: "", eta: "", location: ""};
@@ -179,19 +179,19 @@ function parse(r) {
 }
 function pkgHTML(pk, info, country) {
   const st = stage(info.status), eff = st || 3, dest = esc(ctry(country)), loc = esc(info.location || "");
-  const eta = info.eta && eff !== 5 ? " · " + t("eta") + " " + fmtDate(info.eta) : "";
+  const eta = info.eta && eff !== 5 ? " · " + tr("eta") + " " + fmtDate(info.eta) : "";
   // [dòng chính, dòng phụ, trạng thái]: done = xanh, now = tím, "" = xám
-  const n = [[esc(hanoi()), t("sent"), eff <= 2 ? "now" : "done"]];
-  if (eff === 5) n.push([dest, t("s5"), "done"]);
+  const n = [[esc(hanoi()), tr("sent"), eff <= 2 ? "now" : "done"]];
+  if (eff === 5) n.push([dest, tr("s5"), "done"]);
   else {
-    n.push([t("ondel"), "", eff <= 2 ? "" : loc ? "done" : "now"]);
-    if (eff >= 3 && loc) n.push([loc, t("loc"), "now"]);
-    n.push([dest, t("dest") + eta, ""]);
+    n.push([tr("ondel"), "", eff <= 2 ? "" : loc ? "done" : "now"]);
+    if (eff >= 3 && loc) n.push([loc, tr("loc"), "now"]);
+    n.push([dest, tr("dest") + eta, ""]);
   }
   const trk = pk.map(p => { const k = norm(p.carrier), C = esc(String(p.carrier).toUpperCase()), link = LINKS[k](encodeURIComponent(p.id));
-    return `<div class="trk"><button class="cp" data-id="${esc(p.id)}" onclick="cp(this)" title="${t("copy")}" aria-label="${t("copy")}">${CPI}</button>
+    return `<div class="trk"><button class="cp" data-id="${esc(p.id)}" onclick="cp(this)" title="${tr("copy")}" aria-label="${tr("copy")}">${CPI}</button>
       ${LOGO[k] ? `<div class="logo">${LOGO[k]}</div>` : `<span class="carrier">${C}</span>`}<div class="id">${esc(p.id)}</div>
-      <a class="btn" href="${link}" target="_blank" rel="noopener">${t("open")} ${C} ↗</a></div>`; }).join("");
+      <a class="btn" href="${link}" target="_blank" rel="noopener">${tr("open")} ${C} ↗</a></div>`; }).join("");
   return `<div class="pkg">${trk}<ul class="steps">${n.map(x => `<li class="${x[2]}">${x[0]}${x[1] ? `<small>${x[1]}</small>` : ""}</li>`).join("")}</ul></div>`;
 }
 sel.onchange = () => { L = sel.value; try { localStorage.setItem("lang", L); } catch (e) {} render(); };
