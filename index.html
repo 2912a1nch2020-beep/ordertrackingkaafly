@@ -129,6 +129,8 @@ const M={vi:["Đã nhận đơn hàng","Đã gửi hàng","Giao tới địa ch�
 M.ch=M.de;
 Object.keys(M).forEach(c=>{const a=M[c];Object.assign(T[c],{s5:a[0],sent:a[1],dest:a[2],hn:a[3]});});
 const OD={vi:"Đơn hàng đang được giao",en:"Your order is being delivered",fr:"Votre commande est en cours de livraison",it:"Il tuo ordine è in consegna",de:"Ihre Bestellung wird zugestellt",tr:"Siparişiniz teslimat sürecinde",pl:"Twoje zamówienie jest w trakcie dostawy",ru:"Заказ доставляется",uk:"Замовлення доставляється",sk:"Vaša objednávka sa doručuje",ar:"طلبك قيد التوصيل",es:"Tu pedido está en reparto",pt:"Seu pedido está sendo entregue",he:"ההזמנה שלכם בדרך למסירה",nl:"Je bestelling wordt bezorgd"};
+const PR={en:"The supplier is preparing the products",vi:"Nhà cung cấp đang chuẩn bị sản phẩm",fr:"Le fournisseur prépare les produits",it:"Il fornitore sta preparando i prodotti",de:"Der Lieferant bereitet die Produkte vor",tr:"Tedarikçi ürünleri hazırlıyor",pl:"Dostawca przygotowuje produkty",ru:"Поставщик готовит товары",uk:"Постачальник готує товари",sk:"Dodávateľ pripravuje produkty",ar:"المورّد يقوم بتجهيز المنتجات",es:"El proveedor está preparando los productos",pt:"O fornecedor está preparando os produtos",he:"הספק מכין את המוצרים",nl:"De leverancier bereidt de producten voor"};
+PR.ch=PR.de;Object.keys(PR).forEach(c=>{if(T[c])T[c].prep=PR[c];});
 OD.ch=OD.de;Object.keys(OD).forEach(c=>T[c].ondel=OD[c]);T.vi.loc="Vị trí hiện tại";
 const LOC={ch:"de-CH",pt:"pt-BR",ar:"ar-KW",he:"he-IL"};
 Object.keys(TT).forEach(c => { T[c].title = TT[c]; T[c].by = BY[c]; });
@@ -183,8 +185,10 @@ function pkgHTML(pk, info, country) {
   const st = stage(info.status), eff = st || 3, dest = esc(ctry(country)), loc = esc(info.location || "");
   const eta = info.eta && eff !== 5 ? " · " + tr("eta") + " " + fmtDate(info.eta) : "";
   // [dòng chính, dòng phụ, trạng thái]: done = xanh, now = tím, "" = xám
-  const n = [[esc(hanoi()), tr("sent"), eff <= 2 ? "now" : "done"]];
+  const prepping = eff !== 5 && !loc; // cột G trống: chưa có vị trí => nhà cung cấp đang chuẩn bị hàng
+  const n = [[esc(hanoi()), prepping ? tr("prep") : tr("sent"), prepping || eff <= 2 ? "now" : "done"]];
   if (eff === 5) n.push([dest, tr("s5"), "done"]);
+  else if (prepping) n.push([dest, tr("dest") + eta, ""]);
   else {
     n.push([tr("ondel"), "", eff <= 2 ? "" : loc ? "done" : "now"]);
     if (eff >= 3 && loc) n.push([loc, tr("loc"), "now"]);
