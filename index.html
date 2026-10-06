@@ -55,6 +55,24 @@ header{position:relative}
 .trk .cp{top:0;right:0}
 [dir=rtl] .trk .cp{right:auto;left:0}
 .pkg .steps{margin-top:6px}
+/* admin */
+#adminBtn{position:absolute;top:14px;left:14px;display:flex;align-items:center;gap:6px;padding:8px 12px;border-radius:10px;border:0;font-size:14px;font-weight:600;background:rgba(255,255,255,.95);color:#1d2433;cursor:pointer}
+#adminBtn.on{background:#16a34a;color:#fff}
+#adminBtn svg{width:15px;height:15px}
+#modal{position:fixed;inset:0;background:rgba(10,12,20,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#modal.open{display:flex}
+#modal .box{background:var(--card);color:var(--text);border-radius:16px;padding:22px;width:100%;max-width:340px;box-shadow:0 12px 40px rgba(0,0,0,.35)}
+#modal h3{margin:0 0 12px;font-size:18px}
+#modal input{width:100%;min-width:0;text-align:center;letter-spacing:6px;font-size:22px}
+#modal .err{color:#dc2626;font-size:13px;min-height:18px;margin:8px 0 0;text-align:center}
+#modal .row{margin-top:12px;justify-content:flex-end}
+.sug{display:none;margin-top:10px;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.sug.open{display:block}
+.sug button{display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;padding:12px 14px;border:0;border-bottom:1px solid var(--line);background:transparent;color:var(--text);font-size:15px;text-align:start;cursor:pointer}
+.sug button:last-child{border-bottom:0}
+.sug button:hover,.sug button.act{background:rgba(91,75,219,.1)}
+.sug small{color:var(--muted);font-size:12px;white-space:nowrap}
+.sug .none{padding:12px 14px;color:var(--muted);font-size:14px}
 /* chat bubble */
 #chat{position:fixed;right:20px;bottom:20px;display:flex;flex-direction:column;align-items:center;gap:4px;z-index:10}
 #bubble{width:62px;height:62px;border-radius:50%;border:0;background:linear-gradient(135deg,#6d5df0,#a855f7);display:grid;place-items:center;cursor:pointer;animation:blink 1.4s infinite}
@@ -69,7 +87,7 @@ header{position:relative}
 </style>
 </head>
 <body>
-<header><select id="lang" aria-label="Language"></select><h1 data-i="title"></h1><div class="by"><span data-i="by"></span> <svg class="flag" viewBox="0 0 30 20" width="24" height="16" aria-label="Vietnam"><rect width="30" height="20" rx="2" fill="#da251d"/><path fill="#ff0" d="M15 4l1.8 5.5h5.8l-4.7 3.4 1.8 5.5-4.7-3.4-4.7 3.4 1.8-5.5-4.7-3.4h5.8z"/></svg></div><p data-i="sub"></p></header>
+<header><button id="adminBtn" type="button"></button><select id="lang" aria-label="Language"></select><h1 data-i="title"></h1><div class="by"><span data-i="by"></span> <svg class="flag" viewBox="0 0 30 20" width="24" height="16" aria-label="Vietnam"><rect width="30" height="20" rx="2" fill="#da251d"/><path fill="#ff0" d="M15 4l1.8 5.5h5.8l-4.7 3.4 1.8 5.5-4.7-3.4-4.7 3.4 1.8-5.5-4.7-3.4h5.8z"/></svg></div><p data-i="sub"></p></header>
 <main>
   <div class="card">
     <form id="f">
@@ -77,9 +95,12 @@ header{position:relative}
       <button class="go" data-i="track"></button>
     </form>
     <p class="hint" data-i="hint"></p>
+    <div id="sug" class="sug"></div>
   </div>
   <div id="out"></div>
 </main>
+
+<div id="modal"><div class="box"><h3 id="mTitle"></h3><input id="mCode" type="password" inputmode="numeric" autocomplete="off"><p class="err" id="mErr"></p><div class="row"><button class="btn" id="mCancel" type="button"></button><button class="btn fill" id="mOk" type="button"></button></div></div></div>
 
 <div id="chat">
   <div id="menu">
@@ -93,7 +114,7 @@ header{position:relative}
 
 <script>
 // ===== CONFIG =====
-const API_URL = "https://script.google.com/macros/s/AKfycbyUGNDe7P6fK7l0yuTZG7nA0g3rLPCpObzlyTN6PdRUU-7Dp4c0DKBqo5Zv9Idux0C1UQ/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbwQr1zAV_-f_Rdg524BwUnzqortYmngh3DDm6uO6AkDCd0cQjJB_i1XvADgUQDyk3daVQ/exec";
 const LINKS = {
   fedex: id => "https://www.fedex.com/fedextrack/?trknbr=" + id,
   dhl: id => "https://www.dhl.com/global-en/home/tracking/tracking-express.html?submit=1&tracking-id=" + id,
@@ -159,6 +180,7 @@ function render() {
   document.documentElement.lang = L; document.documentElement.dir = (L === "ar" || L === "he") ? "rtl" : "ltr"; document.title = tr("title") + " – Kaafly Hair"; sel.value = L; sel.setAttribute("aria-label", tr("lang")); $("bubble").setAttribute("aria-label", tr("chat"));
   document.querySelectorAll("[data-i]").forEach(el => el.textContent = tr(el.dataset.i));
   document.querySelectorAll("[data-ph]").forEach(el => el.placeholder = tr(el.dataset.ph));
+  adminUI();
   const s = state; if (!s) { out.innerHTML = ""; return; }
   if (s.k === "msg") { out.innerHTML = `<div class="card msg">${tr(s.m)}</div>`; return; }
   const r = s.r, {pk, info} = parse(r);
@@ -201,10 +223,7 @@ function pkgHTML(pk, info, country) {
   return `<div class="pkg">${trk}<ul class="steps">${n.map(x => `<li class="${x[2]}">${x[0]}${x[1] ? `<small>${x[1]}</small>` : ""}</li>`).join("")}</ul></div>`;
 }
 sel.onchange = () => { L = sel.value; try { localStorage.setItem("lang", L); } catch (e) {} render(); };
-$("f").onsubmit = async e => {
-  e.preventDefault();
-  const q = $("phone").value.replace(/\D/g, "");
-  if (q.length < 7) { state = {k: "msg", m: "short"}; return render(); }
+async function lookup(q) {
   state = {k: "msg", m: "searching"}; render();
   try {
     const r = await (await fetch(API_URL + "?phone=" + q)).json();
@@ -212,7 +231,81 @@ $("f").onsubmit = async e => {
     state = r.found ? {k: "r", r} : {k: "msg", m: "nf"};
   } catch (err) { state = {k: "msg", m: "err"}; }
   render();
+}
+// ===== ADMIN =====
+// Mã admin KHÔNG nằm trong trang này: backend (Apps Script) kiểm tra mã.
+const ADM = {
+vi:{btn:"Admin",out:"Thoát admin",title:"Đăng nhập admin",ph:"Nhập mã admin",ok:"Đăng nhập",cancel:"Hủy",bad:"Mã không đúng.",net:"Không kết nối được backend admin. Hãy cập nhật Apps Script (xem hướng dẫn).",ph2:"Nhập tên khách hàng…",hint:"Chế độ admin: gõ tên khách hàng rồi chọn trong danh sách gợi ý để xem lộ trình đơn hàng.",none:"Không có khách hàng phù hợp.",loading:"Đang tải danh sách khách hàng…"},
+en:{btn:"Admin",out:"Exit admin",title:"Admin login",ph:"Enter admin code",ok:"Log in",cancel:"Cancel",bad:"Wrong code.",net:"Could not reach the admin backend. Please update the Apps Script.",ph2:"Type a customer name…",hint:"Admin mode: type a customer name and pick a suggestion to see their shipment.",none:"No matching customer.",loading:"Loading customers…"}};
+const adm = k => (ADM[L] || (L === "vi" ? ADM.vi : ADM.en))[k];
+let admin = null, custs = [], act = -1;
+const LOCK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>';
+function adminUI() {
+  const b = $("adminBtn"), inp = $("phone");
+  b.className = admin ? "on" : ""; b.innerHTML = LOCK + (admin ? adm("out") : adm("btn"));
+  $("mTitle").textContent = adm("title"); $("mCode").placeholder = "• • • • •"; $("mOk").textContent = adm("ok"); $("mCancel").textContent = adm("cancel");
+  if (admin) {
+    inp.type = "text"; inp.inputMode = "text"; inp.autocomplete = "off"; inp.placeholder = adm("ph2");
+    document.querySelector(".hint").textContent = adm("hint");
+  } else { inp.type = "tel"; inp.inputMode = "tel"; inp.autocomplete = "tel"; hideSug(); }
+}
+async function fetchCustomers(code) {
+  const r = await (await fetch(API_URL + "?admin=" + encodeURIComponent(code) + "&list=1")).json();
+  if (r && r.ok === true && Array.isArray(r.customers)) return r.customers;
+  if (r && r.ok === false) throw new Error("bad");
+  throw new Error("net");
+}
+function setAdmin(code, list) {
+  admin = code; custs = list || []; state = null; $("phone").value = "";
+  try { code ? sessionStorage.setItem("adm", code) : sessionStorage.removeItem("adm"); } catch (e) {}
+  render();
+}
+$("adminBtn").onclick = () => { if (admin) return setAdmin(null); $("mCode").value = ""; $("mErr").textContent = ""; $("modal").classList.add("open"); setTimeout(() => $("mCode").focus(), 50); };
+$("mCancel").onclick = () => $("modal").classList.remove("open");
+$("modal").onclick = e => { if (e.target.id === "modal") $("modal").classList.remove("open"); };
+async function doLogin() {
+  const code = $("mCode").value.trim(); if (!code) return;
+  $("mErr").textContent = "…";
+  try { const list = await fetchCustomers(code); $("modal").classList.remove("open"); setAdmin(code, list); }
+  catch (e) { $("mErr").textContent = adm(e.message === "bad" ? "bad" : "net"); }
+}
+$("mOk").onclick = doLogin;
+$("mCode").onkeydown = e => { if (e.key === "Enter") doLogin(); };
+function matches() {
+  const q = norm($("phone").value); if (!q) return [];
+  const qd = q.replace(/\D/g, "");
+  return custs.filter(c => norm(c.name).includes(q) || (qd.length >= 3 && String(c.phone || "").replace(/\D/g, "").includes(qd)))
+    .sort((a, b) => (norm(a.name).startsWith(q) ? 0 : 1) - (norm(b.name).startsWith(q) ? 0 : 1)).slice(0, 8);
+}
+function hideSug() { $("sug").classList.remove("open"); $("sug").innerHTML = ""; act = -1; }
+function showSug() {
+  if (!admin) return hideSug();
+  const m = matches(), el = $("sug"); act = -1;
+  if (!$("phone").value.trim()) return hideSug();
+  el.innerHTML = m.length ? m.map((c, i) => `<button type="button" data-i="${i}">${esc(c.name)}<small>${esc([ctry(c.country), String(c.phone || "").replace(/\D/g, "").slice(-4) ? "…" + String(c.phone).replace(/\D/g, "").slice(-4) : ""].filter(Boolean).join(" · "))}</small></button>`).join("") : `<div class="none">${adm("none")}</div>`;
+  el.classList.add("open");
+  el.querySelectorAll("button").forEach(b => b.onclick = () => pick(m[+b.dataset.i]));
+}
+function pick(c) {
+  if (!c) return; $("phone").value = c.name; hideSug();
+  const q = String(c.phone || "").replace(/\D/g, "");
+  if (q.length < 7) { state = {k: "msg", m: "nf"}; return render(); }
+  lookup(q);
+}
+$("phone").oninput = showSug;
+$("phone").onkeydown = e => {
+  if (!admin) return;
+  const bs = [...$("sug").querySelectorAll("button")]; if (!bs.length) return;
+  if (e.key === "ArrowDown" || e.key === "ArrowUp") { e.preventDefault(); act = (act + (e.key === "ArrowDown" ? 1 : -1) + bs.length) % bs.length; bs.forEach((b, i) => b.classList.toggle("act", i === act)); }
 };
+$("f").onsubmit = async e => {
+  e.preventDefault();
+  if (admin) { const m = matches(), c = m[act >= 0 ? act : 0]; if (c) pick(c); else { state = {k: "msg", m: "nf"}; render(); } return; }
+  const q = $("phone").value.replace(/\D/g, "");
+  if (q.length < 7) { state = {k: "msg", m: "short"}; return render(); }
+  lookup(q);
+};
+try { const c = sessionStorage.getItem("adm"); if (c) fetchCustomers(c).then(l => setAdmin(c, l)).catch(() => { try { sessionStorage.removeItem("adm"); } catch (e) {} }); } catch (e) {}
 render();
 </script>
 </body>
